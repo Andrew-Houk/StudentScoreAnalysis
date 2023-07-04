@@ -154,7 +154,8 @@ public class AppController {
         // Save the student to the database or perform other operations
         if(!file.isEmpty()) {
             try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
-                System.out.println("Adding Student...");
+                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+                System.out.println(timeStamp + " Adding Student...");
                 Sheet sheet = workbook.getSheetAt(0); // Assuming you want to read the first sheet
                 int row_index = 0;
                 int cell_index = 0;
@@ -199,7 +200,8 @@ public class AppController {
                         myDB.addStudent(new Students(name,ID,grade,myClass));
                     }
                 }
-                System.out.println("Finished");
+                timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+                System.out.println(timeStamp + " Finished");
             } catch (IOException e) {
                 e.printStackTrace();
             }
