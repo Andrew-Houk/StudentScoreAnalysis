@@ -260,7 +260,6 @@ public class AppController {
         return "redirect:/All-teachers"; // Redirect to the student list page or any other desired page
     }
 
-
     @PostMapping("/Add-teachers")
     public String addTeachers(@RequestParam("file") MultipartFile file){
         // Save the student to the database or perform other operations
@@ -354,6 +353,12 @@ public class AppController {
                 .header("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
+    }
+
+    @GetMapping("/Course-setting")
+    public String CourseSetting(@CookieValue(value = "session", defaultValue = "") String sessionToken, Model model) {
+
+        return "Course-setting";
     }
 
 

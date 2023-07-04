@@ -51,6 +51,13 @@ public class myDB
                     PRIMARY KEY (PhoneNumber)
                 );
                 """;
+        String createCourse =
+                """
+                CREATE TABLE IF NOT EXISTS Course (
+                    CourseName Text NOT NULL,
+                    PRIMARY KEY (CourseName)
+                );
+                """;
         String createScore =
                 """
                 CREATE TABLE IF NOT EXISTS Score (
@@ -67,6 +74,7 @@ public class myDB
             statement.execute(createStudent);
             statement.execute(createScore);
             statement.execute(createTeacher);
+            statement.execute(createCourse);
             // If we get here that means no exception raised from getConnection - meaning it worked
             System.out.println("A new database has been created.");
             INSERTUserNewUser("Admin");
@@ -525,6 +533,27 @@ public class myDB
             statement.setString(2,teacher.getPhoneNumber());
             statement.setString(3,teacher.getGrade());
             statement.setString(4,teacher.getMyClass());
+            statement.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addCourse(String CourseName){
+        String addUserSQL =
+                """
+                INSERT INTO Course (CourseName) 
+                VALUES (?) 
+                """;
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL,config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(addUserSQL))
+        {
+            statement.setString(1,CourseName);
             statement.executeUpdate();
         }
         catch (SQLException e)
