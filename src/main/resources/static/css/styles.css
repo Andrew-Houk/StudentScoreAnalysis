@@ -1,0 +1,139 @@
+/* styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+}
+
+a {
+    color: white;
+    text-decoration: none; /* remove the underline from the links */
+    font-weight: bold;
+    font-size: 18px;
+}
+
+form {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+input[type="file"] {
+    margin-bottom: 10px;
+}
+
+input[type="submit"] {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #555;
+}
+
+input[type=text] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.company-name {
+    margin-left: 10px; /* add some space between the logo and the company name */
+    color: white; /* change the color of the company name to white */
+}
+
+nav {
+    display: flex; /* create a horizontal layout */
+    justify-content: left; /* center the items horizontally */
+    background-color: #3C1D69; /* change the background color of the navigation */
+}
+
+ul {
+    list-style: none; /* remove the bullet points from the list */
+    margin: 0;
+    padding: 0;
+    display: flex; /* create a vertical layout */
+}
+
+li {
+    margin: 0 15px; /* add some space between the navigation items */
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+nav ul li ul {
+    display: none;
+    position: absolute;
+    background-color: #3C1D69;
+}
+
+nav ul li:hover > ul {
+    display: block;
+}
+
+/* Your navigational menu has to be stacked when viewed on a phone. */
+@media only screen and (max-width: 600px) {
+    nav ul {
+        flex-direction: column;
+    }
+}
+
+header {
+    background-color: #50288c;
+}
+
+footer {
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+
+.input-explanation{
+    text-align: center;
+    color: black;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+table th,
+table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f5f5f5;
+}
+
+table tbody tr:hover {
+    background-color: #e0e0e0;
+}

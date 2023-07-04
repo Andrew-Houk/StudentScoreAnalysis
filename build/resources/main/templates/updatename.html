@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Update Item</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<h1>Update Item</h1>
+<form action="/updatename" method="post">
+  <table>
+    <tr th:each="item : ${items}">
+      <td>
+      <td> <input type="text" th:value="${item.getKey()}"  name="item" /></td>
+      </td>
+      <td>
+        <input type="number" step="any" id="cost" name="cost" th:value="${value.get(item.getKey())}" />
+      </td>
+    </tr>
+  </table>
+  <br>
+  <input type="submit" value="Update" />
+</form>
+</body>
+</html>
