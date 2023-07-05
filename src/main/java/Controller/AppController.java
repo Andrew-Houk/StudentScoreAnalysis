@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import Model.Students;
 import Model.Teachers;
+import Model.Exam;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -256,6 +257,10 @@ public class AppController {
     @PostMapping("/Add-A-teacher")
     public String addATeacher(Teachers teacher) {
         // Save the student to the database or perform other operations
+        teacher.myClass = teacher.myClass.replace(" ","");
+        teacher.myClass = teacher.myClass.replace("，",",");
+        teacher.Grade = teacher.Grade.replace(" ","");
+        teacher.Grade = teacher.Grade.replace("，",",");
         myDB.addTeacher(teacher);
         return "redirect:/All-teachers"; // Redirect to the student list page or any other desired page
     }
@@ -382,6 +387,23 @@ public class AppController {
 
         // Redirect back to the course setting page
         return "redirect:/Course-setting";
+    }
+
+
+    @GetMapping("/Exam-management")
+    public String addExam(Model model) {
+        List<Exam> exams = myDB.getAllExam();
+        model.addAttribute("exams", exams);
+        return "Exam-management";
+    }
+
+    @PostMapping("/add-exam")
+    public String addExam(@RequestParam("examName") String examName, @RequestParam("examDate") String examDate) {
+        // Perform the logic to add the new exam to the database
+        myDB.addAExam(examName, examDate);
+
+        // Redirect to the course-setting page after adding the exam
+        return "redirect:/Exam-management";
     }
 
 

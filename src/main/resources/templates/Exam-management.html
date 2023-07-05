@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考试管理</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    /* Styles for the popup form */
+    .popup-form {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #f9f9f9;
+      padding: 20px;
+      z-index: 9999;
+    }
+
+    /* Styles for the overlay background */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 9998;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo-container">
+    <!--        <img src="img/logo.png" alt="Description of your image" class="logo" style="width: 80px; height: auto;">-->
+    <h1 class="company-name">Student Score Analysis System</h1>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="/Home">Home</a></li>
+      <li><a href="/my-class">My Class</a></li>
+      <li><a href="/student-score-analysis">Student Score Analysis</a></li>
+      <li><a href="/score-input">Score Input</a></li>
+      <li><a href="/Exam-management">考试管理</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <h2>Exam Management</h2>
+  <button id="addExamButton">Add a new exam</button>
+
+  <!-- Popup form for adding a new exam -->
+  <div id="addExamForm" class="popup-form">
+    <h3>Add a new exam</h3>
+    <form action="/add-exam" method="POST">
+      <label for="examName">Exam Name:</label>
+      <input type="text" id="examName" name="examName" required>
+      <label for="examDate">Exam Date:</label>
+      <input type="date" id="examDate" name="examDate" required>
+      <button type="submit">Submit</button>
+    </form>
+    <button id="closeFormButton">Close</button>
+  </div>
+
+  <!-- Overlay background -->
+  <div id="overlay" class="overlay"></div>
+</main>
+
+<h2>Existing Exams</h2>
+<table>
+  <thead>
+  <tr>
+    <th>Exam Name</th>
+    <th>Exam Date</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="exam : ${exams}">
+    <td th:text="${exam.examName}"></td>
+    <td th:text="${exam.examDate}"></td>
+  </tr>
+  </tbody>
+</table>
+
+
+<script>
+  // Get references to the elements
+  const addExamButton = document.getElementById('addExamButton');
+  const addExamForm = document.getElementById('addExamForm');
+  const closeFormButton = document.getElementById('closeFormButton');
+  const overlay = document.getElementById('overlay');
+
+  // Function to display the popup form
+  function displayForm() {
+    addExamForm.style.display = 'block';
+    overlay.style.display = 'block';
+  }
+
+  // Function to hide the popup form
+  function hideForm() {
+    addExamForm.style.display = 'none';
+    overlay.style.display = 'none';
+  }
+
+  // Event listener for the "Add a new exam" button
+  addExamButton.addEventListener('click', displayForm);
+
+  // Event listener for the "Close" button in the form
+  closeFormButton.addEventListener('click', hideForm);
+</script>
+
+</body>
+</html>

@@ -2,6 +2,7 @@ package Database;
 
 import Model.Students;
 import Model.Teachers;
+import Model.Exam;
 import org.sqlite.SQLiteConfig;
 
 import java.io.File;
@@ -64,8 +65,17 @@ public class myDB
                      StudentID Text NOT NULL,
                      CourseName Text Not NULL,
                      Score Double Not NULL,
-                     InputDate Date Not NULL,
-                     PRIMARY KEY (StudentID, CourseName)
+                     ExamID Date Not NULL,
+                     PRIMARY KEY (StudentID, ExamID)
+                );
+                """;
+        String createExam =
+                """
+                CREATE TABLE IF NOT EXISTS exam (
+                     ExamID INTEGER Autoincrement,
+                     CourseName Text Not NULL,
+                     ExamDate Text Not NULL,
+                     PRIMARY KEY (ExamID)
                 );
                 """;
         try (Connection ignored = DriverManager.getConnection(dbURL,config.toProperties())) {
@@ -75,6 +85,7 @@ public class myDB
             statement.execute(createScore);
             statement.execute(createTeacher);
             statement.execute(createCourse);
+            statement.execute(createExam);
             // If we get here that means no exception raised from getConnection - meaning it worked
             System.out.println("A new database has been created.");
             INSERTUserNewUser("Admin");
@@ -609,7 +620,82 @@ public class myDB
         return allCourse;
     }
 
+    public static Students findAStudent(String ID){
+        Students result = new Students(null,null,0,0);
+        String sql = "SELECT * From Student Where StudentID == (?)";
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setString(1, ID);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                String StudentName = rs.getString("Student");
+                String StudentID = rs.getString("StudentID");
+                int Grade = rs.getInt("Grade");
+                int myClass = rs.getInt("Class");
+                result.StudentName = StudentName;
+                result.StudentID = StudentID;
+                result.Grade = Grade;
+                result.myClass = myClass;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(result.StudentName == null){
+            return null;
+        }
+        return result;
+    }
 
+    public static void addAExam(String examName, String examDate){
+        String addUserSQL =
+                """
+                INSERT INTO exam (CourseName, ExamDate) 
+                VALUES (?, ?) 
+                """;
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL,config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(addUserSQL))
+        {
+            statement.setString(1,examName);
+            statement.setString(2,examDate);
+            statement.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<Exam> getAllExam(){
+        List<Exam> exams = new ArrayList<>();
+        String query = "SELECT ExamName, ExamDate FROM exam";
+
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             Statement statement = conn.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            while (resultSet.next()) {
+                String examName = resultSet.getString("ExamName");
+                String examDate = resultSet.getString("ExamDate");
+
+                Exam exam = new Exam(examName, examDate);
+                exams.add(exam);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return exams;
+    }
 
     public static void main(String[] args){
         Database.myDB.createDB();
