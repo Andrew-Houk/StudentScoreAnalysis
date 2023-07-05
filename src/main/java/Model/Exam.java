@@ -1,10 +1,10 @@
 package Model;
 
 public class Exam {
-    String examName;
-    String examDate;
-    public Exam(String examName,String examDate){
+    public String CourseName;
+    public String examDate;
+    public Exam(String CourseName,String examDate){
         this.examDate = examDate;
-        this.examName = examName;
+        this.CourseName = CourseName;
     }
 }

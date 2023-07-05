@@ -398,9 +398,9 @@ public class AppController {
     }
 
     @PostMapping("/add-exam")
-    public String addExam(@RequestParam("examName") String examName, @RequestParam("examDate") String examDate) {
+    public String addExam(@RequestParam("CourseName") String CourseName, @RequestParam("examDate") String examDate) {
         // Perform the logic to add the new exam to the database
-        myDB.addAExam(examName, examDate);
+        myDB.addAExam(CourseName, examDate);
 
         // Redirect to the course-setting page after adding the exam
         return "redirect:/Exam-management";

@@ -71,8 +71,8 @@ public class myDB
                 """;
         String createExam =
                 """
-                CREATE TABLE IF NOT EXISTS exam (
-                     ExamID INTEGER Autoincrement,
+                CREATE TABLE IF NOT EXISTS Exam (
+                     ExamID int IDENTITY(1,1),
                      CourseName Text Not NULL,
                      ExamDate Text Not NULL,
                      PRIMARY KEY (ExamID)
@@ -652,7 +652,7 @@ public class myDB
     public static void addAExam(String examName, String examDate){
         String addUserSQL =
                 """
-                INSERT INTO exam (CourseName, ExamDate) 
+                INSERT INTO Exam (CourseName, ExamDate) 
                 VALUES (?, ?) 
                 """;
         SQLiteConfig config = new SQLiteConfig();
@@ -673,7 +673,7 @@ public class myDB
 
     public static List<Exam> getAllExam(){
         List<Exam> exams = new ArrayList<>();
-        String query = "SELECT ExamName, ExamDate FROM exam";
+        String query = "SELECT CourseName, ExamDate FROM Exam";
 
         SQLiteConfig config = new SQLiteConfig();
         config.enforceForeignKeys(true);
@@ -684,7 +684,7 @@ public class myDB
              ResultSet resultSet = statement.executeQuery(query)) {
 
             while (resultSet.next()) {
-                String examName = resultSet.getString("ExamName");
+                String examName = resultSet.getString("CourseName");
                 String examDate = resultSet.getString("ExamDate");
 
                 Exam exam = new Exam(examName, examDate);
