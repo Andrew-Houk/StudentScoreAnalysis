@@ -562,6 +562,53 @@ public class myDB
         }
     }
 
+    public static void deleteCourse(String CourseName){
+        String addUserSQL =
+                """
+                DELETE FROM Course
+                WHERE CourseName == (?)
+                """;
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL,config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(addUserSQL))
+        {
+            statement.setString(1,CourseName);
+            statement.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<String> getAllCourse(){
+        List<String> allCourse = new ArrayList<>();
+
+        String sql = "SELECT * From Course";
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+//                Teacher Text NOT NULL,
+//                PhoneNumber Text NOT NULL,
+//                Grade Text NOT NULL,
+//                Class Text NOT NULL,
+//                PRIMARY KEY (PhoneNumber)
+                String CourseName = rs.getString("CourseName");
+                allCourse.add(CourseName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return allCourse;
+    }
+
 
 
     public static void main(String[] args){

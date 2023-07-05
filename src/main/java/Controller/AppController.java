@@ -358,7 +358,30 @@ public class AppController {
     @GetMapping("/Course-setting")
     public String CourseSetting(@CookieValue(value = "session", defaultValue = "") String sessionToken, Model model) {
 
+        List<String> courses = myDB.getAllCourse();
+
+        // Pass the list of courses to the view
+        model.addAttribute("courses", courses);
+
         return "Course-setting";
+    }
+
+    @PostMapping("/add-course")
+    public String addCourse(@RequestParam("courseName") String courseName) {
+        // Call the addCourse method to add the new course to the database
+        myDB.addCourse(courseName);
+
+        // Redirect back to the course setting page
+        return "redirect:/Course-setting";
+    }
+
+    @PostMapping("/delete-course")
+    public String deleteCourse(@RequestParam("courseName") String courseName) {
+        // Call the deleteCourse method to delete the course from the database
+        myDB.deleteCourse(courseName);
+
+        // Redirect back to the course setting page
+        return "redirect:/Course-setting";
     }
 
 

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>课程设置</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 <header>
@@ -21,6 +22,26 @@
     </ul>
   </nav>
 </header>
+<main>
+  <h2>添加课程</h2>
+  <form action="/add-course" method="POST">
+    <input type="text" name="courseName" placeholder="课程名字" required>
+    <button class="button-1" type="submit">Add</button>
+  </form>
 
+  <h2>课程总览</h2>
+  <ul>
+    <!-- Loop through the courses and display them -->
+    <ul class="course-list">
+      <li th:each="course : ${courses}">
+        <form action="/delete-course" method="POST" style="display: inline;">
+          <span th:text="${course}"></span>
+          <input type="hidden" name="courseName" th:value="${course}">
+          <button class="button-2" type="submit" action="/delete-course" method="POST"><span class="text">删除</span></button>
+        </form>
+      </li>
+    </ul>
+  </ul>
+</main>
 </body>
 </html>
