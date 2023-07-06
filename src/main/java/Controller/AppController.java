@@ -228,6 +228,24 @@ public class AppController {
                 .body(resource);
     }
 
+    @GetMapping("/score-download")
+    public ResponseEntity<Resource> downloadExcelFileScore() throws IOException {
+        // Load the Excel file from the classpath or any other source
+        Resource resource = new ClassPathResource("/download/学生批量登记表格.xlsx");
+
+        // Get the file name (including extension)
+        String fileName = "学生批量登记表格.xlsx";
+
+        // Encode the file name using URL encoding with UTF-8 encoding
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
+
+        // Set the appropriate headers
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
     @GetMapping("/All-teachers")
     public String allTeachers(@CookieValue(value = "session", defaultValue = "") String sessionToken,
                         Model model) {

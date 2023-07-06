@@ -28,6 +28,8 @@
     </header>
     <h2 class="input-explanation"> Choose Your File To Upload Students' Scores</h2>
     <form action="/upload" method="POST" enctype="multipart/form-data" onsubmit="showAlert()">
+        <h3 class="Score-input"> 选择文件进行批量导入</h3>
+        <button><a href="/score-download">下载导入模板</a></button>
         <input type="file" name="file" accept=".xlsx, .xls" />
         <br />
         <input type="submit" value="Upload" />
