@@ -231,10 +231,10 @@ public class AppController {
     @GetMapping("/score-download")
     public ResponseEntity<Resource> downloadExcelFileScore() throws IOException {
         // Load the Excel file from the classpath or any other source
-        Resource resource = new ClassPathResource("/download/学生批量登记表格.xlsx");
+        Resource resource = new ClassPathResource("/download/成绩批量上传表.xlsx");
 
         // Get the file name (including extension)
-        String fileName = "学生批量登记表格.xlsx";
+        String fileName = "成绩批量上传表.xlsx";
 
         // Encode the file name using URL encoding with UTF-8 encoding
         String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
