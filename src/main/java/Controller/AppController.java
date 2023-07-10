@@ -102,7 +102,57 @@ public class AppController {
         // Logic to read data from the uploaded file
         // You can use libraries like Apache POI to read Excel files
         // Process the data as needed
-        TimeUnit.SECONDS.sleep(1);
+        if(!file.isEmpty()) {
+            try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+                System.out.println(timeStamp + " Adding Score...");
+                Sheet sheet = workbook.getSheetAt(0); // Assuming you want to read the first sheet
+                int row_index = 0;
+                int cell_index = 0;
+                String studentID = null;
+                int examID = 0;
+                double score = 0;
+                // Iterate over rows
+                for (Row row : sheet) {
+                    row_index++;
+                    cell_index = 0;
+                    if (row_index > 1) {
+                        // Iterate over cells
+                        for (Cell cell : row) {
+                            cell_index++;
+                            CellType cellType = cell.getCellType();
+                            // Read cell value based on cell type
+                            if (cell_index == 1) {
+                                if (cellType == CellType.STRING) {
+                                    studentID = cell.getStringCellValue();
+                                } else if (cellType == CellType.NUMERIC) {
+                                    studentID = String.valueOf(cell.getNumericCellValue());
+                                }
+
+                            } else if (cell_index == 2) {
+                                if (cellType == CellType.STRING) {
+                                    examID = Integer.parseInt(cell.getStringCellValue());
+                                } else if (cellType == CellType.NUMERIC) {
+                                    examID = (int) cell.getNumericCellValue();
+                                }
+                            } else if (cell_index == 3) {
+                                if (cellType == CellType.STRING) {
+                                    score = Double.valueOf(cell.getStringCellValue());
+                                } else if (cellType == CellType.NUMERIC) {
+                                    score = cell.getNumericCellValue();
+                                }
+                            }
+                        }
+                        //System.out.println(name + " " + ID + " " + grade + " " + myClass); // Move to the next line after each row
+                        myDB.addNewScoreWithExamID(studentID,examID,score);
+                    }
+                }
+                timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+                System.out.println(timeStamp + " Finished");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return "redirect:/success"; // Redirect to a success page
     }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>考试管理</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css">
   <style>
     /* Styles for the popup form */
     .popup-form {
@@ -72,12 +72,14 @@
 <table>
   <thead>
   <tr>
+    <th>Exam ID</th>
     <th>Course Name</th>
     <th>Exam Date</th>
   </tr>
   </thead>
   <tbody>
   <tr th:each="exam : ${exams}">
+    <td th:text="${exam.examID}"></td>
     <td th:text="${exam.CourseName}"></td>
     <td th:text="${exam.examDate}"></td>
   </tr>

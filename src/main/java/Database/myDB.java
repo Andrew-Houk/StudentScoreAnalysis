@@ -65,17 +65,16 @@ public class myDB
                      StudentID Text NOT NULL,
                      CourseName Text Not NULL,
                      Score Double Not NULL,
-                     ExamID Date Not NULL,
+                     ExamID int Not NULL,
                      PRIMARY KEY (StudentID, ExamID)
                 );
                 """;
         String createExam =
                 """
                 CREATE TABLE IF NOT EXISTS Exam (
-                     ExamID int IDENTITY(1,1),
+                     ExamID INTEGER PRIMARY KEY,
                      CourseName Text Not NULL,
-                     ExamDate Text Not NULL,
-                     PRIMARY KEY (ExamID)
+                     ExamDate Text Not NULL
                 );
                 """;
         try (Connection ignored = DriverManager.getConnection(dbURL,config.toProperties())) {
@@ -650,19 +649,69 @@ public class myDB
     }
 
     public static void addAExam(String examName, String examDate){
+        List<String> courses = getAllCourseName();
+        if (courses.contains(examName)) {
+            String addUserSQL =
+                        """
+                    INSERT INTO Exam (ExamID, CourseName, ExamDate) 
+                    VALUES (null, ?, ?) 
+                    """;
+            SQLiteConfig config = new SQLiteConfig();
+            config.enforceForeignKeys(true);
+            String dbURL = Database.myDB.dbURL;
+            try (Connection conn = DriverManager.getConnection(dbURL,config.toProperties());
+                 PreparedStatement statement = conn.prepareStatement(addUserSQL))
+            {
+                statement.setString(1,examName);
+                statement.setString(2,examDate);
+                statement.executeUpdate();
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static List<String> getAllCourseName(){
+        List<String> courses = new ArrayList<>();
+        String query = "SELECT courseName FROM course";
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             Statement statement = conn.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            while (resultSet.next()) {
+                String courseName = resultSet.getString("courseName");
+                courses.add(courseName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return courses;
+    }
+
+
+    public static void addAScore(String studentID, int examID, String courseName, double score){
         String addUserSQL =
                 """
-                INSERT INTO Exam (CourseName, ExamDate) 
-                VALUES (?, ?) 
+                INSERT INTO score (StudentID, CourseName, Score, ExamID) 
+                VALUES (?, ?, ?, ?) 
                 """;
         SQLiteConfig config = new SQLiteConfig();
         config.enforceForeignKeys(true);
+
         String dbURL = Database.myDB.dbURL;
         try (Connection conn = DriverManager.getConnection(dbURL,config.toProperties());
              PreparedStatement statement = conn.prepareStatement(addUserSQL))
         {
-            statement.setString(1,examName);
-            statement.setString(2,examDate);
+            statement.setString(1,studentID);
+            statement.setString(2,courseName);
+            statement.setDouble(3,score);
+            statement.setInt(4,examID);
             statement.executeUpdate();
         }
         catch (SQLException e)
@@ -673,7 +722,7 @@ public class myDB
 
     public static List<Exam> getAllExam(){
         List<Exam> exams = new ArrayList<>();
-        String query = "SELECT CourseName, ExamDate FROM Exam";
+        String query = "SELECT examID, CourseName, ExamDate FROM Exam";
 
         SQLiteConfig config = new SQLiteConfig();
         config.enforceForeignKeys(true);
@@ -684,10 +733,11 @@ public class myDB
              ResultSet resultSet = statement.executeQuery(query)) {
 
             while (resultSet.next()) {
+                int examID = resultSet.getInt("examID");
                 String examName = resultSet.getString("CourseName");
                 String examDate = resultSet.getString("ExamDate");
 
-                Exam exam = new Exam(examName, examDate);
+                Exam exam = new Exam(examName, examDate, examID);
                 exams.add(exam);
             }
         } catch (SQLException e) {
@@ -697,10 +747,56 @@ public class myDB
         return exams;
     }
 
+
+    public static Map<Integer,String> getAllExamID(){
+        Map<Integer,String> exams = new HashMap<>();
+        String query = "SELECT ExamID,CourseName FROM Exam";
+
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             Statement statement = conn.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            while (resultSet.next()) {
+                int ExamID = resultSet.getInt("ExamID");
+                String examName = resultSet.getString("CourseName");
+                exams.put(ExamID,examName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return exams;
+    }
+
+
+    public static boolean addNewScoreWithExamID(String studentID, int examID, double score){
+        Map<Integer,String> exams = getAllExamID();
+        if (exams.containsKey(examID)){
+            String courseName = exams.get(examID);
+            addAScore(studentID,examID,courseName,score);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     public static void main(String[] args){
         Database.myDB.createDB();
         System.out.println("test");
-        //removeDB();
+        addCourse("test");
+        addAExam("test","2020-09-09");
+        addAExam("test","2020-09-10");
+        List<Exam> exams = getAllExam();
+        for (Exam exam:exams){
+            System.out.println(exam.examID);
+            System.out.println(exam.CourseName);
+        }
+        removeDB();
     }
 
 
