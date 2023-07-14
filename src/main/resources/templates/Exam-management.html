@@ -78,7 +78,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:each="exam : ${exams}">
+  <tr th:each="exam : ${exams}" th:data-exam-id="${exam.examID}" onclick="showScorePopup(this.getAttribute('data-exam-id'));">
     <td th:text="${exam.examID}"></td>
     <td th:text="${exam.CourseName}"></td>
     <td th:text="${exam.examDate}"></td>
@@ -86,6 +86,24 @@
   </tbody>
 </table>
 
+<!-- Popup table for displaying student scores -->
+<div id="scorePopup" style="display: none;">
+  <h2>Student Scores</h2>
+  <table id="scoreTable">
+    <thead>
+    <tr>
+      <th>Student Name</th>
+      <th>Student ID</th>
+      <th>Score</th>
+      <th>Grade</th>
+      <th>Class</th>
+    </tr>
+    </thead>
+    <tbody id="scoreTableBody">
+    <!-- Student scores will be dynamically populated here -->
+    </tbody>
+  </table>
+</div>
 
 <script>
   // Get references to the elements
@@ -111,6 +129,50 @@
 
   // Event listener for the "Close" button in the form
   closeFormButton.addEventListener('click', hideForm);
+
+  <!-- ...existing code... -->
+
+  function showScorePopup(examId) {
+    const encodedExamId = encodeURIComponent(examId);
+
+    console.log(examId);
+    fetch('/get-scores?examId=' + encodedExamId)
+            .then(response => response.json())
+            .then(data => {
+              populateScoreTable(data);
+              document.getElementById('scorePopup').style.display = 'block';
+            })
+            .catch(error => console.error(error));
+  }
+
+  function populateScoreTable(scores) {
+    const scoreTableBody = document.getElementById('scoreTableBody');
+    scoreTableBody.innerHTML = '';
+
+    scores.forEach(score => {
+      const row = document.createElement('tr');
+      const nameCell = document.createElement('td');
+      const IdCell = document.createElement('td');
+      const scoreCell = document.createElement('td');
+      const classCell = document.createElement('td');
+      const gradeCell = document.createElement('td');
+
+      nameCell.textContent = score.studentName;
+      IdCell.textContent = score.studentId
+      scoreCell.textContent = score.myScore;
+      classCell.textContent = score.myClass;
+      gradeCell.textContent = score.grade;
+
+      row.appendChild(nameCell);
+      row.appendChild(IdCell);
+      row.appendChild(scoreCell);
+      row.appendChild(classCell);
+      row.appendChild(gradeCell);
+
+      scoreTableBody.appendChild(row);
+    });
+  }
+
 </script>
 
 </body>

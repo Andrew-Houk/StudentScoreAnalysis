@@ -1,5 +1,6 @@
 package Database;
 
+import Model.Score;
 import Model.Students;
 import Model.Teachers;
 import Model.Exam;
@@ -768,7 +769,6 @@ public class myDB
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return exams;
     }
 
@@ -785,14 +785,49 @@ public class myDB
         }
     }
 
-    public static void main(String[] args){
+    public static List<Score> getScoresByExamId(String examId){
+        List<Students> allStudents = getAllStudents();
+        Map<String,Students> hashStudents = new HashMap<>();
+        for (Students student:allStudents){
+            hashStudents.put(student.StudentID,student);
+        }
+        System.out.println(examId);
+
+
+        List<Score> result = new ArrayList<>();
+        String query = "SELECT studentID, Score FROM Score WHERE ExamID = ?";
+
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(query)) {
+            statement.setString(1, examId);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                String studentID = rs.getString("studentID");
+                double score = rs.getDouble("Score");
+                Students student = hashStudents.get(studentID);
+
+                result.add(new Score(student.StudentName,student.StudentID, student.Grade, student.myClass, score));
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
         Database.myDB.createDB();
         System.out.println("test");
         addCourse("test");
-        addAExam("test","2020-09-09");
-        addAExam("test","2020-09-10");
+        addAExam("test", "2020-09-09");
+        addAExam("test", "2020-09-10");
         List<Exam> exams = getAllExam();
-        for (Exam exam:exams){
+        for (Exam exam : exams) {
             System.out.println(exam.examID);
             System.out.println(exam.CourseName);
         }

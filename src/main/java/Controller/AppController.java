@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import Model.Students;
 import Model.Teachers;
 import Model.Exam;
+import Model.Score;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -752,6 +753,14 @@ public class AppController {
     ) {
         model.addAttribute("name", name);
         return "greeting";
+    }
+
+    @GetMapping("/get-scores")
+    @ResponseBody
+    public List<Score> getScores(@RequestParam("examId") String examId) {
+        // Fetch student data and scores based on the examId
+        List<Score> scores = myDB.getScoresByExamId(examId);
+        return scores;
     }
 
 }
