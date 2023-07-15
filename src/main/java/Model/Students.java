@@ -28,4 +28,8 @@ public class Students {
     public int getGrade() {
         return Grade;
     }
+
+    public int getMyClass() {
+        return myClass;
+    }
 }

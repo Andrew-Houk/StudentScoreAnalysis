@@ -649,6 +649,99 @@ public class myDB
         return result;
     }
 
+    public static List<Students> findAllStudentInAClass(int myClass, int grade){
+        List<Students> result = new ArrayList<>();
+        String sql = "SELECT * From Student Where CLass == (?) AND Grade == (?)";
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setInt(1, myClass);
+            statement.setInt(2, grade);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                String StudentName = rs.getString("Student");
+                String StudentID = rs.getString("StudentID");
+                Students student = new Students(StudentName,StudentID,grade,myClass);
+                result.add(student);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(result.isEmpty()){
+            return null;
+        }
+        return result;
+    }
+
+    public static List<Integer> teacherFindAllGrade(String phoneNumber){
+        List<Integer> result = new ArrayList<>();
+        String sql = "SELECT * From Teacher Where PhoneNumber == (?)";
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setString(1, phoneNumber);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                String StudentName = rs.getString("Grade");
+                String[] values = StudentName.split(",");
+
+                for (String value : values) {
+                    if(value == "ALL"){
+                        return null;
+                    }
+                    int intValue = Integer.parseInt(value.trim());
+                    result.add(intValue);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(result.isEmpty()){
+            return null;
+        }
+        return result;
+    }
+
+    public static List<List<Integer>> teacherFindAllClass(String phoneNumber){
+        List<List<Integer>> result = new ArrayList<>();
+        String sql = "SELECT * From Teacher Where PhoneNumber == (?)";
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setString(1, phoneNumber);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                String StudentName = rs.getString("Class");
+                String[] Grades = StudentName.split(";");
+
+                for (String Grade : Grades) {
+                    if(Grade == "ALL"){
+                        return null;
+                    }
+                    String[] myClasses = Grade.split(",");
+                    List<Integer> Classes = new ArrayList<>();
+                    for (String myClass:myClasses){
+                        int intValue = Integer.parseInt(myClass.trim());
+                        Classes.add(intValue);
+                    }
+                    result.add(Classes);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(result.isEmpty()){
+            return null;
+        }
+        return result;
+    }
+
     public static void addAExam(String examName, String examDate){
         List<String> courses = getAllCourseName();
         if (courses.contains(examName)) {
@@ -833,6 +926,7 @@ public class myDB
         }
         removeDB();
     }
+
 
 
 }

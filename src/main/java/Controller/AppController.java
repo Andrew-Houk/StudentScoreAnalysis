@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 @Controller
 public class AppController {
@@ -89,7 +90,34 @@ public class AppController {
     }
 
     @GetMapping("/my-class")
-    public String myClass() {
+    public String myClass(@CookieValue(value = "session", defaultValue = "") String sessionToken,
+                          Model model) {
+        if (!sessions.containsKey(sessionToken)) {
+            model.addAttribute("error", "Invalid User Id");
+            return "invalid";
+        }
+        List<Students> allStudents = new ArrayList<>();
+
+        System.out.println(sessions.get(sessionToken));
+        System.out.println(myDB.teacherFindAllGrade(sessions.get(sessionToken)));
+        System.out.println(myDB.teacherFindAllClass(sessions.get(sessionToken)));
+        int index = 0;
+        for (Integer grade:myDB.teacherFindAllGrade(sessions.get(sessionToken))){
+            for (Integer myClass:myDB.teacherFindAllClass(sessions.get(sessionToken)).get(index)){
+                if(myDB.findAllStudentInAClass(myClass,grade) != null){
+                    for(Students student:myDB.findAllStudentInAClass(myClass,grade)){
+                        allStudents.add(student);
+                    }
+                }
+            }
+            index++;
+        }
+
+        Map<String, List<Students>> groupedStudents = allStudents.stream()
+                .collect(Collectors.groupingBy(student -> student.getGrade() + "-" + student.getMyClass()));
+
+        model.addAttribute("groupedStudents", groupedStudents);
+
         return "my-class"; // returns the view name for "My Class" page
     }
 
@@ -328,6 +356,7 @@ public class AppController {
         // Save the student to the database or perform other operations
         teacher.myClass = teacher.myClass.replace(" ","");
         teacher.myClass = teacher.myClass.replace("，",",");
+        teacher.myClass = teacher.myClass.replace("；",";");
         teacher.Grade = teacher.Grade.replace(" ","");
         teacher.Grade = teacher.Grade.replace("，",",");
         myDB.addTeacher(teacher);
