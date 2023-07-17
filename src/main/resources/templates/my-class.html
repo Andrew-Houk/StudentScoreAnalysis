@@ -25,20 +25,29 @@
 <table>
     <thead>
     <tr>
+        <th>Student Name</th>
+        <th>Student ID</th>
         <th>Grade</th>
         <th>Class</th>
-        <th>Student Name</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="groupedStudents : ${students.groupBy(#root.Grade + '-' + #root.myClass)}">
-        <td colspan="3">Grade: <span th:text="${groupedStudents[0].Grade}"></span> | Class: <span th:text="${groupedStudents[0].myClass}"></span></td>
-    </tr>
-    <tr th:each="groupedStudents : ${students.groupBy(#root.Grade + '-' + #root.myClass)}">
-        <td></td>
-        <td></td>
-        <td th:each="student : ${groupedStudents}" th:text="${student.StudentName}"></td>
-    </tr>
+    <th:block th:each="group : ${groupedStudents}">
+        <tr th:each="studentScore : ${group}">
+            <td>
+                <span th:text="${studentScore.studentName}"></span>
+            </td>
+            <td>
+                <span th:text="${studentScore.StudentID}"></span>
+            </td>
+            <td>
+                <span th:text="${studentScore.grade}"></span>
+            </td>
+            <td>
+                <span th:text="${studentScore.myClass}"></span>
+            </td>
+        </tr>
+    </th:block>
     </tbody>
 </table>
 
