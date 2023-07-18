@@ -8,7 +8,10 @@ import org.sqlite.SQLiteConfig;
 
 import java.io.File;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 import java.util.Map.Entry;
 
 import static java.lang.Thread.sleep;
@@ -884,7 +887,6 @@ public class myDB
         for (Students student:allStudents){
             hashStudents.put(student.StudentID,student);
         }
-        System.out.println(examId);
 
 
         List<Score> result = new ArrayList<>();
@@ -911,6 +913,177 @@ public class myDB
         }
 
         return result;
+    }
+
+    public static List<Score> getScoresByName(String studentID){
+        List<Students> allStudents = getAllStudents();
+        Map<String,Students> hashStudents = new HashMap<>();
+        for (Students student:allStudents){
+            hashStudents.put(student.StudentID,student);
+        }
+
+
+        List<Score> result = new ArrayList<>();
+        List<Integer> IDs = new ArrayList<>();
+        String query = "SELECT studentID, Score FROM Score WHERE StudentID = ?";
+
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(query)) {
+            statement.setString(1, studentID);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                int ExamID = rs.getInt("ExamID");
+                IDs.add(ExamID);
+                double score = rs.getDouble("Score");
+                Students student = hashStudents.get(studentID);
+
+                Date examDate = getExamDate(ExamID);
+
+                Score newScore = new Score(student.StudentName,student.StudentID, student.Grade, student.myClass, score);
+                newScore.editScoreDate(examDate);
+                result.add(newScore);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public static List<Score> getScoresByClass(int grade, int myClass){
+        List<Students> allStudents = getAllStudents();
+        Map<String,Students> hashStudents = new HashMap<>();
+        for (Students student:allStudents){
+            if(student.myClass == myClass && student.Grade == grade) {
+                hashStudents.put(student.StudentID, student);
+            }
+        }
+
+
+        List<Score> result = new ArrayList<>();
+        String query = "SELECT studentID, Score FROM Score";
+
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(query)) {
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                String  studentID = rs.getString("studentID");
+                double score = rs.getDouble("Score");
+                Students student = hashStudents.get(studentID);
+
+                if (student != null){
+                    Score newScore = new Score(student.StudentName,student.StudentID, student.Grade, student.myClass, score);
+                    result.add(newScore);
+                }
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public static List<Score> getScoresByGrade(int grade){
+        List<Students> allStudents = getAllStudents();
+        Map<String,Students> hashStudents = new HashMap<>();
+        for (Students student:allStudents){
+            if(student.Grade == grade) {
+                hashStudents.put(student.StudentID, student);
+            }
+        }
+
+
+        List<Score> result = new ArrayList<>();
+        String query = "SELECT studentID, Score FROM Score";
+
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(query)) {
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                String  studentID = rs.getString("studentID");
+                double score = rs.getDouble("Score");
+                Students student = hashStudents.get(studentID);
+
+                if (student != null){
+                    Score newScore = new Score(student.StudentName,student.StudentID, student.Grade, student.myClass, score);
+                    result.add(newScore);
+                }
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public static Integer getScorePositionWithinClass(double score, int grade, int myClass){
+        List<Score> classScore = getScoresByClass(grade,myClass);
+        int position = 1;
+        for (Score scores:classScore){
+            if (score < scores.myScore){
+                position ++;
+            }
+        }
+        return position;
+    }
+
+    public static Integer getScorePositionWithinGrade(double score, int grade){
+        List<Score> classScore = getScoresByGrade(grade);
+        int position = 1;
+        for (Score scores:classScore){
+            if (score < scores.myScore){
+                position ++;
+            }
+        }
+        return position;
+    }
+
+    public static Date getExamDate(Integer ExamID){
+        String query = "SELECT examDate FROM exam WHERE ExamID = ?";
+
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        String dbURL = Database.myDB.dbURL;
+        try (Connection conn = DriverManager.getConnection(dbURL, config.toProperties());
+             PreparedStatement statement = conn.prepareStatement(query)) {
+            statement.setInt(1, ExamID);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                String examDate = rs.getString("examDate");
+
+                String pattern = "yyyy-MM-dd";
+
+                SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+
+                try {
+                    Date date = sdf.parse(examDate);
+                    return date;
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
     }
 
     public static void main(String[] args) {
